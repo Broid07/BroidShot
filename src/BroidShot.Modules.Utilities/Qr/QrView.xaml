@@ -1,0 +1,206 @@
+<UserControl x:Class="BroidShot.Modules.Utilities.QrView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:core="clr-namespace:BroidShot.Core;assembly=BroidShot.Core">
+  <UserControl.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/BroidShot.Modules.Utilities;component/Common/UtilityStyles.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+      <!-- Large source button in the read drop zone: icon tile + title + caption. -->
+      <Style x:Key="SourceTile" TargetType="Button" BasedOn="{StaticResource TileButton}">
+        <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+        <Setter Property="Padding" Value="14,12" />
+        <Setter Property="Margin" Value="0,0,10,0" />
+        <Setter Property="core:ThemeAssist.CornerRadius" Value="8" />
+      </Style>
+    </ResourceDictionary>
+  </UserControl.Resources>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <!-- ===== Tabs ===== -->
+    <DockPanel Margin="0,0,0,16">
+      <WrapPanel DockPanel.Dock="Right" Style="{StaticResource HintRow}" VerticalAlignment="Center" AutomationProperties.Name="Alan seçim ekranında Q tuşu QR okur">
+        <TextBlock Text="Alan seçerken:" VerticalAlignment="Center" Margin="0,0,8,0" />
+        <Border Style="{StaticResource Keycap}"><TextBlock Text="Q" /></Border>
+        <TextBlock Text="ekrandaki QR'ları okur" VerticalAlignment="Center" Margin="8,0,0,0" Foreground="{StaticResource TextSecondaryBrush}" />
+      </WrapPanel>
+      <Border Style="{StaticResource SegmentedBar}">
+        <StackPanel Orientation="Horizontal">
+          <RadioButton x:Name="ReadTab" Content="Oku" Style="{StaticResource Segment}" core:ThemeAssist.Icon="&#xE8B3;" Checked="TabChanged" />
+          <RadioButton x:Name="CreateTab" Content="Oluştur" Style="{StaticResource Segment}" core:ThemeAssist.Icon="&#xED14;" Checked="TabChanged" />
+        </StackPanel>
+      </Border>
+    </DockPanel>
+
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+    <Grid>
+    <!-- ===== Oku ===== -->
+    <Grid x:Name="ReadPanel" VerticalAlignment="Top">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="16" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Border x:Name="ReadCard" Style="{StaticResource Card}" Padding="20" AllowDrop="True" Drop="FileDropped" DragOver="FileDragOver">
+        <StackPanel>
+          <TextBlock Text="Kaynak seç" Style="{StaticResource SectionHeading}" Margin="0,0,0,4" />
+          <TextBlock Text="Ekranda bir alan seç, bir görsel aç ya da panodaki görseli oku." Style="{StaticResource MutedText}" FontSize="13" Margin="0,0,0,16" />
+
+          <Button Style="{StaticResource SourceTile}" Click="ReadScreen" Margin="0,0,0,10" AutomationProperties.Name="Ekrandan oku">
+            <DockPanel>
+              <Border Style="{StaticResource AccentIconTile}" Margin="0,0,14,0">
+                <TextBlock Text="&#xE8B3;" Style="{StaticResource IconText}" />
+              </Border>
+              <TextBlock DockPanel.Dock="Right" Text="&#xE76C;" Style="{StaticResource IconText}" FontSize="12" Foreground="{StaticResource TextTertiaryBrush}" />
+              <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="Ekrandan" FontWeight="SemiBold" />
+                <TextBlock Text="QR kodunu içine alacak bir alan seç" Style="{StaticResource CaptionText}" FontSize="12" Margin="0,2,0,0" />
+              </StackPanel>
+            </DockPanel>
+          </Button>
+          <Grid Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="10" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Style="{StaticResource SourceTile}" Click="ReadFile" Margin="0" AutomationProperties.Name="Görsel dosyasından oku">
+              <DockPanel>
+                <Border Style="{StaticResource IconTile}" Margin="0,0,12,0">
+                  <TextBlock Text="&#xEB9F;" Style="{StaticResource IconText}" />
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                  <TextBlock Text="Görsel dosyası" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                  <TextBlock Text="PNG, JPG, BMP…" Style="{StaticResource CaptionText}" FontSize="12" Margin="0,2,0,0" />
+                </StackPanel>
+              </DockPanel>
+            </Button>
+            <Button Grid.Column="2" Style="{StaticResource SourceTile}" Click="ReadClipboard" Margin="0" AutomationProperties.Name="Panodan oku">
+              <DockPanel>
+                <Border Style="{StaticResource IconTile}" Margin="0,0,12,0">
+                  <TextBlock Text="&#xE77F;" Style="{StaticResource IconText}" />
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                  <TextBlock Text="Panodan" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                  <TextBlock Text="Kopyalanmış görsel" Style="{StaticResource CaptionText}" FontSize="12" Margin="0,2,0,0" />
+                </StackPanel>
+              </DockPanel>
+            </Button>
+          </Grid>
+
+          <!-- Drop zone -->
+          <Grid MinHeight="112">
+            <Rectangle Style="{StaticResource DropZoneOutline}" />
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16">
+              <TextBlock Text="&#xE896;" Style="{StaticResource IconText}" FontSize="20" Foreground="{StaticResource TextTertiaryBrush}" />
+              <TextBlock Text="Görseli buraya sürükleyip bırak" Style="{StaticResource MutedText}" FontSize="13" Margin="0,8,0,0" HorizontalAlignment="Center" />
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <Border Grid.Column="2" Style="{StaticResource Card}" Padding="20">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <DockPanel Margin="0,0,0,12">
+            <Border x:Name="ResultChip" DockPanel.Dock="Right" Style="{StaticResource SuccessChip}" Visibility="Collapsed">
+              <TextBlock x:Name="ResultInfo" />
+            </Border>
+            <TextBlock Text="Sonuç" Style="{StaticResource SectionHeading}" Margin="0" VerticalAlignment="Center" />
+          </DockPanel>
+          <TextBox x:Name="ResultBox" Grid.Row="1" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="148" MaxHeight="360" VerticalContentAlignment="Top"
+                   Padding="12,10" VerticalScrollBarVisibility="Auto" core:ThemeAssist.Placeholder="Henüz QR okunmadı. Soldan bir kaynak seç."
+                   AutomationProperties.Name="Okunan metin" />
+          <WrapPanel Grid.Row="2" Margin="0,14,0,0">
+            <Button x:Name="CopyResultButton" Content="Kopyala" Style="{StaticResource PrimaryButton}" core:ThemeAssist.Icon="&#xE8C8;" Click="CopyResult" />
+            <Button x:Name="OpenButton" Content="Bağlantıyı aç" core:ThemeAssist.Icon="&#xE8A7;" Click="OpenResult" Visibility="Collapsed" />
+            <Button x:Name="ToInputButton" Content="Oluşturucuya al" Style="{StaticResource SubtleButton}" core:ThemeAssist.Icon="&#xE8AB;" Click="ResultToInput" />
+          </WrapPanel>
+        </Grid>
+      </Border>
+    </Grid>
+
+    <!-- ===== Oluştur ===== -->
+    <Grid x:Name="CreatePanel" VerticalAlignment="Top" Visibility="Collapsed">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="16" />
+        <ColumnDefinition Width="Auto" MinWidth="340" />
+      </Grid.ColumnDefinitions>
+
+      <Border Style="{StaticResource Card}" Padding="20">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <TextBlock Text="İçerik" Style="{StaticResource SectionHeading}" />
+          <TextBlock Grid.Row="1" Text="Metin veya bağlantı" Style="{StaticResource FieldLabel}" />
+          <TextBox x:Name="InputBox" Grid.Row="2" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="140" MaxHeight="360" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top"
+                   Padding="12,10" TextChanged="InputChanged" core:ThemeAssist.Placeholder="https://… veya herhangi bir metin" AutomationProperties.Name="Metin veya bağlantı" />
+          <Grid Grid.Row="3" Margin="0,16,0,0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="12" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+              <TextBlock Text="Boyut (piksel)" Style="{StaticResource FieldLabel}" />
+              <ComboBox x:Name="SizeBox" SelectionChanged="OptionsChanged" AutomationProperties.Name="Boyut" />
+            </StackPanel>
+            <StackPanel Grid.Column="2">
+              <TextBlock Text="Hata düzeltme" Style="{StaticResource FieldLabel}" />
+              <ComboBox x:Name="LevelBox" SelectionChanged="OptionsChanged" AutomationProperties.Name="Hata düzeltme" />
+            </StackPanel>
+          </Grid>
+          <TextBlock Grid.Row="4" Text="Yüksek hata düzeltme, kod kısmen kapansa da okunmasını sağlar ama kodu sıklaştırır." Style="{StaticResource CaptionText}" Margin="0,10,0,0" />
+        </Grid>
+      </Border>
+
+      <Border Grid.Column="2" Style="{StaticResource Card}" Padding="20">
+        <StackPanel>
+          <DockPanel Margin="0,0,0,14">
+            <Border x:Name="InfoChip" DockPanel.Dock="Right" Style="{StaticResource Chip}">
+              <TextBlock x:Name="InfoText" />
+            </Border>
+            <TextBlock Text="Önizleme" Style="{StaticResource SectionHeading}" Margin="0" VerticalAlignment="Center" />
+          </DockPanel>
+          <Grid Width="300" Height="300">
+            <!-- QR codes must stay black on white for scanners, so this frame is white on purpose. -->
+            <Border x:Name="PreviewFrame" Background="White" CornerRadius="8" Padding="10">
+              <Image x:Name="Preview" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+            </Border>
+            <Grid x:Name="PreviewEmpty" Visibility="Collapsed">
+              <Rectangle Style="{StaticResource DropZoneOutline}" />
+              <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="&#xED14;" Style="{StaticResource IconText}" FontSize="32" Foreground="{StaticResource TextTertiaryBrush}" />
+                <TextBlock x:Name="EmptyPreviewText" Text="Bir metin yaz" Style="{StaticResource MutedText}" FontSize="13" Margin="20,10,20,0" TextAlignment="Center" />
+              </StackPanel>
+            </Grid>
+          </Grid>
+          <WrapPanel Margin="0,16,0,0">
+            <Button Content="PNG olarak kaydet…" Style="{StaticResource PrimaryButton}" core:ThemeAssist.Icon="&#xE74E;" Click="SavePng" />
+            <Button Content="Görseli kopyala" core:ThemeAssist.Icon="&#xE8C8;" Click="CopyImage" Margin="0" />
+          </WrapPanel>
+          <TextBlock x:Name="CreateStatus" Style="{StaticResource CaptionText}" Margin="0,10,0,0" MaxWidth="300" HorizontalAlignment="Left" Visibility="Collapsed" />
+        </StackPanel>
+      </Border>
+    </Grid>
+    </Grid>
+    </ScrollViewer>
+  </Grid>
+</UserControl>

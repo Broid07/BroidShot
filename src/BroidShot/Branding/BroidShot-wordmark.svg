@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="176" viewBox="0 0 720 176" role="img" aria-label="BroidShot">
+  <rect width="720" height="176" rx="22" fill="#09090b"/>
+  <g transform="translate(24 24)">
+    <path d="M18 43V18H43M18 85V110H43M85 110H110V85" fill="none" stroke="#79797f" stroke-width="4" stroke-linecap="square"/>
+    <path d="M85 18H110V43" fill="none" stroke="#e54040" stroke-width="3" stroke-linecap="square"/>
+    <path d="M40 29H63C79 29 86 37 86 47C86 54 83 59 77 62C86 65 90 71 90 79C90 92 80 99 64 99H40ZM51 39V57H63C71 57 75 54 75 48C75 42 71 39 63 39ZM51 68V89H64C74 89 79 85 79 79C79 72 74 68 64 68Z" fill="#f1efed" fill-rule="evenodd"/>
+  </g>
+  <text x="184" y="109" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="65" font-weight="600" letter-spacing="-2" fill="#f1efed">Broid<tspan fill="#95959c">Shot</tspan></text>
+  <path d="M189 133H225" stroke="#e54040" stroke-width="2"/>
+</svg>

@@ -1,0 +1,18 @@
+{
+  "id": "PLabc123",
+  "title": "Örnek Oynatma Listesi",
+  "uploader": "Liste Sahibi",
+  "_type": "playlist",
+  "webpage_url": "https://www.youtube.com/playlist?list=PLabc123",
+  "extractor_key": "YoutubeTab",
+  "thumbnails": [
+    { "url": "https://i.ytimg.com/pl/small.jpg" },
+    { "url": "https://i.ytimg.com/pl/large.jpg" }
+  ],
+  "entries": [
+    { "_type": "url", "ie_key": "Youtube", "id": "aaa111", "url": "https://www.youtube.com/watch?v=aaa111", "title": "Birinci şarkı", "duration": 185, "channel": "Kanal A" },
+    { "_type": "url", "ie_key": "Youtube", "id": "bbb222", "url": "https://www.youtube.com/watch?v=bbb222", "title": "İkinci şarkı", "duration": 3725.0, "uploader": "Kanal B" },
+    { "_type": "url", "ie_key": "Generic", "id": "ccc333", "url": "ccc333", "title": "Göreli bağlantılı öğe" },
+    null
+  ]
+}

@@ -1,0 +1,149 @@
+<!-- Local styles shared by the utility pages. Only what the shared theme (BroidShot.Core Themes/Theme.xaml) does not offer:
+     a segmented control, colour swatches, table rows and a dashed drop zone. Colours come from the theme via DynamicResource
+     (this dictionary is loaded on its own, so it never refers to theme keys statically). -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:core="clr-namespace:BroidShot.Core;assembly=BroidShot.Core">
+
+  <!-- Segmented control: <Border Style="{StaticResource SegmentedBar}"><StackPanel Orientation="Horizontal"> RadioButtons with Style="{StaticResource Segment}" -->
+  <Style x:Key="SegmentedBar" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource ControlBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource StrokeSubtleBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="3" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="SnapsToDevicePixels" Value="True" />
+  </Style>
+  <Style x:Key="Segment" TargetType="RadioButton">
+    <Setter Property="FontFamily" Value="{DynamicResource UiFont}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Padding" Value="14,0,16,0" />
+    <Setter Property="MinHeight" Value="30" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="FocusVisualStyle" Value="{DynamicResource FocusVisual}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="RadioButton">
+          <Border x:Name="Root" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="6"
+                  Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+              <TextBlock x:Name="Glyph" Text="{TemplateBinding core:ThemeAssist.Icon}" FontFamily="{DynamicResource IconFont}" FontSize="14" FontWeight="Normal"
+                         VerticalAlignment="Center" Margin="0,0,8,0" />
+              <ContentPresenter VerticalAlignment="Center" RecognizesAccessKey="True" />
+            </StackPanel>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="core:ThemeAssist.Icon" Value="{x:Null}">
+              <Setter TargetName="Glyph" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter Property="Background" Value="{DynamicResource SurfaceActiveBrush}" />
+              <Setter Property="BorderBrush" Value="{DynamicResource StrokeBrush}" />
+              <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+              <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Root" Property="Opacity" Value="0.42" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Colour swatch in a wrapping ListBox: hover = light ring, selected = red ring. -->
+  <Style x:Key="SwatchItem" TargetType="ListBoxItem">
+    <Setter Property="Margin" Value="0,0,8,8" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="FocusVisualStyle" Value="{DynamicResource FocusVisual}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ListBoxItem">
+          <Border x:Name="Ring" BorderBrush="Transparent" BorderThickness="2" CornerRadius="10" Padding="2" SnapsToDevicePixels="True">
+            <ContentPresenter />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Ring" Property="BorderBrush" Value="{DynamicResource StrokeStrongBrush}" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter TargetName="Ring" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Read-only table row (preview tables): divider below, hover tint, not focusable. -->
+  <Style x:Key="TableRow" TargetType="ListBoxItem">
+    <Setter Property="Focusable" Value="False" />
+    <Setter Property="Padding" Value="16,0" />
+    <Setter Property="MinHeight" Value="38" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ListBoxItem">
+          <Border x:Name="Row" Background="Transparent" Padding="{TemplateBinding Padding}" MinHeight="{TemplateBinding MinHeight}"
+                  BorderBrush="{DynamicResource StrokeSubtleBrush}" BorderThickness="0,0,0,1" SnapsToDevicePixels="True">
+            <ContentPresenter VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Row" Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Header strip above a table (column names). -->
+  <Style x:Key="TableHeader" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource ControlBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource StrokeSubtleBrush}" />
+    <Setter Property="BorderThickness" Value="0,1,0,1" />
+    <Setter Property="Padding" Value="16,0" />
+    <Setter Property="MinHeight" Value="32" />
+    <Setter Property="TextElement.FontSize" Value="12" />
+    <Setter Property="TextElement.FontWeight" Value="SemiBold" />
+    <Setter Property="TextElement.Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+  </Style>
+
+  <!-- Dashed outline of a drop zone; put it first in a Grid behind the content. -->
+  <Style x:Key="DropZoneOutline" TargetType="Rectangle">
+    <Setter Property="Stroke" Value="{DynamicResource StrokeStrongBrush}" />
+    <Setter Property="StrokeThickness" Value="1" />
+    <Setter Property="StrokeDashArray" Value="4 3" />
+    <Setter Property="RadiusX" Value="8" />
+    <Setter Property="RadiusY" Value="8" />
+    <Setter Property="Fill" Value="{DynamicResource ControlBrush}" />
+    <Setter Property="SnapsToDevicePixels" Value="True" />
+    <Setter Property="IsHitTestVisible" Value="False" />
+  </Style>
+
+  <!-- Small field label above an input. -->
+  <Style x:Key="FieldLabel" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+    <Setter Property="Margin" Value="0,0,0,6" />
+  </Style>
+
+  <!-- Hint line "Yakalama ekranında: [I] renk seçici". -->
+  <Style x:Key="HintRow" TargetType="WrapPanel">
+    <Setter Property="TextElement.FontSize" Value="12" />
+    <Setter Property="TextElement.Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+  </Style>
+</ResourceDictionary>

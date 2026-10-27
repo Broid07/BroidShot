@@ -1,0 +1,17 @@
+<UserControl x:Class="BroidShot.Modules.Sample.SampleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- Theme keys (Card, SectionHeading, MutedText, AccentButton, ...) come from BroidShot.Core/Themes/Theme.xaml via Application.Resources. -->
+  <StackPanel MaxWidth="620" HorizontalAlignment="Left">
+    <Border Style="{StaticResource Card}" Margin="0,0,0,20">
+      <StackPanel>
+        <TextBlock Text="Bu sayfa bir modülden geliyor" Style="{StaticResource SectionHeading}" />
+        <TextBlock x:Name="InfoText" Style="{StaticResource MutedText}" />
+      </StackPanel>
+    </Border>
+    <WrapPanel>
+      <Button Content="Bildirim göster" Style="{StaticResource AccentButton}" Click="ShowToast" />
+      <Button Content="Örnek iş başlat" Click="StartJob" />
+    </WrapPanel>
+  </StackPanel>
+</UserControl>

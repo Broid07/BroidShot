@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Shared contracts and services for the BroidShot shell and every BroidShot.Modules.* project.
+       All BroidShot projects use the same TFM so WinRT APIs (Windows.Data.Pdf, Windows.Graphics.Capture, ...) are available. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>BroidShot.Core</RootNamespace>
+    <AssemblyName>BroidShot.Core</AssemblyName>
+    <Version>0.3.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Inter 4.1 (SIL OFL 1.1), static weights from the official rsms/inter release; used by Themes/Theme.xaml as UiFont. -->
+    <Resource Include="Themes/Fonts/Inter-*.ttf" />
+    <Content Include="Themes/Fonts/OFL.txt" Link="licenses/Inter-OFL.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

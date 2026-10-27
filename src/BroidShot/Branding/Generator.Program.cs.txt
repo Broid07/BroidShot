@@ -1,0 +1,119 @@
+using System.Globalization;
+using System.IO;
+using System.Windows;
+using System.Windows.Markup;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+
+internal static class Program
+{
+    [STAThread]
+    private static void Main(string[] args)
+    {
+        string root = args.Length > 0 ? Path.GetFullPath(args[0]) : Directory.GetCurrentDirectory();
+        string branding = Path.Combine(root, "src", "BroidShot", "Branding");
+        string output = Path.Combine(root, "artifacts", "branding");
+        Directory.CreateDirectory(output);
+        using var source = File.OpenRead(Path.Combine(branding, "Logo.xaml"));
+        var dictionary = (ResourceDictionary)XamlReader.Load(source);
+        var image = (DrawingImage)dictionary["BroidShotLogo"];
+        image.Freeze();
+        var frames = new List<(int Size, byte[] Data)>();
+        foreach (int size in new[] { 16, 20, 24, 32, 40, 48, 64, 128, 256 })
+        {
+            byte[] png = Png(Render(image, size));
+            frames.Add((size, png));
+            File.WriteAllBytes(Path.Combine(output, $"BroidShot-{size}.png"), png);
+        }
+        File.WriteAllBytes(Path.Combine(branding, "BroidShot-logo.png"), Png(Render(image, 512)));
+        WriteIcon(Path.Combine(branding, "BroidShot.ico"), frames);
+        SaveBoard(image, Path.Combine(output, "brand-board.png"));
+        ValidateIcon(Path.Combine(branding, "BroidShot.ico"), frames);
+        Console.WriteLine("Brand assets rendered; icon directory and all PNG frames verified.");
+    }
+
+    private static BitmapSource Render(DrawingImage image, int size)
+    {
+        var visual = new DrawingVisual();
+        using (DrawingContext drawing = visual.RenderOpen()) drawing.DrawImage(image, new Rect(0, 0, size, size));
+        var bitmap = new RenderTargetBitmap(size, size, 96, 96, PixelFormats.Pbgra32);
+        bitmap.Render(visual);
+        bitmap.Freeze();
+        return bitmap;
+    }
+    private static byte[] Png(BitmapSource bitmap)
+    {
+        var encoder = new PngBitmapEncoder();
+        encoder.Frames.Add(BitmapFrame.Create(bitmap));
+        using var memory = new MemoryStream();
+        encoder.Save(memory);
+        return memory.ToArray();
+    }
+    private static void WriteIcon(string path, IReadOnlyList<(int Size, byte[] Data)> frames)
+    {
+        using var writer = new BinaryWriter(File.Create(path));
+        writer.Write((ushort)0); writer.Write((ushort)1); writer.Write((ushort)frames.Count);
+        int offset = 6 + 16 * frames.Count;
+        foreach (var frame in frames)
+        {
+            writer.Write((byte)(frame.Size == 256 ? 0 : frame.Size));
+            writer.Write((byte)(frame.Size == 256 ? 0 : frame.Size));
+            writer.Write((byte)0); writer.Write((byte)0);
+            writer.Write((ushort)1); writer.Write((ushort)32);
+            writer.Write(frame.Data.Length); writer.Write(offset);
+            offset += frame.Data.Length;
+        }
+        foreach (var frame in frames) writer.Write(frame.Data);
+    }
+    private static void ValidateIcon(string path, IReadOnlyList<(int Size, byte[] Data)> frames)
+    {
+        using var reader = new BinaryReader(File.OpenRead(path));
+        if (reader.ReadUInt16() != 0 || reader.ReadUInt16() != 1 || reader.ReadUInt16() != frames.Count) throw new InvalidDataException("Invalid icon header");
+        for (int i = 0; i < frames.Count; i++)
+        {
+            int width = reader.ReadByte(); int height = reader.ReadByte();
+            reader.ReadBytes(6);
+            int length = reader.ReadInt32(); int offset = reader.ReadInt32();
+            long next = reader.BaseStream.Position;
+            reader.BaseStream.Position = offset;
+            using var png = new MemoryStream(reader.ReadBytes(length));
+            var bitmap = new PngBitmapDecoder(png, BitmapCreateOptions.None, BitmapCacheOption.OnLoad).Frames[0];
+            if (bitmap.PixelWidth != frames[i].Size || bitmap.PixelHeight != frames[i].Size || (width == 0 ? 256 : width) != frames[i].Size || (height == 0 ? 256 : height) != frames[i].Size) throw new InvalidDataException("Invalid icon frame");
+            reader.BaseStream.Position = next;
+            Console.WriteLine($"PASS icon {frames[i].Size}px PNG/32-bit");
+        }
+    }
+    private static void SaveBoard(DrawingImage image, string destination)
+    {
+        var visual = new DrawingVisual();
+        using (DrawingContext dc = visual.RenderOpen())
+        {
+            dc.DrawRectangle(new SolidColorBrush(Color.FromRgb(9, 9, 11)), null, new Rect(0, 0, 1200, 720));
+            dc.DrawText(Text("BROIDSHOT", 17, "#95959C", FontWeights.SemiBold), new Point(62, 48));
+            dc.DrawText(Text("Capture the point.", 44, "#F1EFED", FontWeights.SemiBold), new Point(62, 90));
+            dc.DrawLine(new Pen(Brush("#E54040"), 2), new Point(65, 166), new Point(103, 166));
+            dc.DrawImage(image, new Rect(68, 238, 300, 300));
+            dc.DrawText(Text("Broid", 60, "#F1EFED", FontWeights.SemiBold), new Point(440, 285));
+            dc.DrawText(Text("Shot", 60, "#95959C", FontWeights.SemiBold), new Point(593, 285));
+            dc.DrawText(Text("Siyah zemin. Net bir iz. İnce kırmızı vurgu.", 19, "#95959C", FontWeights.Normal), new Point(444, 373));
+            double x = 445;
+            foreach (int size in new[] { 16, 24, 32, 48, 64 })
+            {
+                dc.DrawImage(Render(image, size), new Rect(x, 467 + (64 - size) / 2.0, size, size));
+                dc.DrawText(Text(size.ToString(CultureInfo.InvariantCulture), 11, "#79797F", FontWeights.Normal), new Point(x, 548));
+                x += 100;
+            }
+            dc.DrawText(Text("ORIGINAL VECTOR MARK  /  BLACK · IVORY · RED", 11, "#79797F", FontWeights.Normal), new Point(64, 651));
+            double swatch = 1030;
+            foreach (string color in new[] { "#09090B", "#F1EFED", "#79797F", "#E54040" })
+            {
+                dc.DrawRectangle(Brush(color), new Pen(Brush("#333338"), 1), new Rect(swatch, 58, 25, 25));
+                swatch += 32;
+            }
+        }
+        var bitmap = new RenderTargetBitmap(1200, 720, 96, 96, PixelFormats.Pbgra32); bitmap.Render(visual);
+        File.WriteAllBytes(destination, Png(bitmap));
+    }
+    private static SolidColorBrush Brush(string hex) => new((Color)ColorConverter.ConvertFromString(hex));
+    private static FormattedText Text(string text, double size, string hex, FontWeight weight) => new(text, CultureInfo.GetCultureInfo("tr-TR"), FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, weight, FontStretches.Normal), size, Brush(hex), 1);
+}

@@ -1,0 +1,95 @@
+<Window x:Class="BroidShot.Startup.LauncherWindow" x:ClassModifier="internal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:core="clr-namespace:BroidShot.Core;assembly=BroidShot.Core"
+        Title="BroidShot" Width="680" Height="700" WindowStartupLocation="CenterScreen"
+        WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" Background="Transparent"
+        FontFamily="{StaticResource UiFont}" FontSize="14" Foreground="{StaticResource TextBrush}"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
+        SnapsToDevicePixels="True" UseLayoutRounding="True">
+  <Border x:Name="WindowSurface" Background="{StaticResource WindowBackgroundBrush}" BorderBrush="{StaticResource StrokeBrush}"
+          BorderThickness="1" CornerRadius="20" Margin="10" ClipToBounds="True">
+    <Grid>
+      <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+      <Border Height="2" VerticalAlignment="Top" Margin="36,0">
+        <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,0"><GradientStop Color="{StaticResource WindowBackgroundColor}" /><GradientStop Color="{StaticResource AccentColor}" Offset="0.5" /><GradientStop Color="{StaticResource WindowBackgroundColor}" Offset="1" /></LinearGradientBrush></Border.Background>
+      </Border>
+      <Grid Margin="24,20,20,0" MouseLeftButtonDown="DragHeader">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <TextBlock Text="BROIDSHOT" FontWeight="SemiBold" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource TextSecondaryBrush}" />
+          <TextBlock Text=" / " Foreground="{StaticResource StrokeStrongBrush}" Margin="8,0" />
+          <TextBlock Text="BAŞLATICI" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource TextTertiaryBrush}" />
+        </StackPanel>
+        <Button Grid.Column="1" Content="&#xE711;" Style="{StaticResource IconButton}" ToolTip="Kapat" AutomationProperties.Name="Başlatıcıyı kapat" Click="CloseClicked" />
+      </Grid>
+
+      <StackPanel x:Name="Entrance" Grid.Row="1" Margin="36,12,36,0" VerticalAlignment="Center">
+        <StackPanel.RenderTransform><TranslateTransform x:Name="EntranceOffset" /></StackPanel.RenderTransform>
+        <Grid Width="104" Height="104" Margin="0,0,0,18">
+          <Ellipse Width="100" Height="100" Stroke="{StaticResource StrokeSubtleBrush}" StrokeThickness="1" />
+          <Ellipse x:Name="Orbit" Width="100" Height="100" Stroke="{StaticResource AccentMutedBrush}" StrokeThickness="1.5" StrokeDashArray="8 20" RenderTransformOrigin="0.5,0.5">
+            <Ellipse.RenderTransform><RotateTransform x:Name="OrbitRotation" /></Ellipse.RenderTransform>
+          </Ellipse>
+          <Border Width="80" Height="80" CornerRadius="18" Background="{StaticResource RailBrush}" BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1">
+            <Viewbox Margin="10">
+              <Canvas Width="128" Height="128">
+                <Path Data="M18 43V18H43M18 85V110H43M85 110H110V85" Stroke="{StaticResource TextTertiaryBrush}" StrokeThickness="4" />
+                <Path x:Name="AccentCorner" Data="M85 18H110V43" Stroke="{StaticResource AccentBrush}" StrokeThickness="4" />
+                <Path Data="M40 29H63C79 29 86 37 86 47C86 54 83 59 77 62C86 65 90 71 90 79C90 92 80 99 64 99H40ZM51 39V57H63C71 57 75 54 75 48C75 42 71 39 63 39ZM51 68V89H64C74 89 79 85 79 79C79 72 74 68 64 68Z" Fill="{StaticResource TextBrush}" />
+              </Canvas>
+            </Viewbox>
+          </Border>
+        </Grid>
+        <TextBlock x:Name="Headline" Text="Birazdan hazırız." Style="{StaticResource PageHeading}" TextAlignment="Center" />
+        <TextBlock x:Name="Subtitle" Text="Araçlarını hazırlıyoruz, sen anı yakala." Style="{StaticResource PageSubtitle}" TextAlignment="Center" Margin="0,8,0,22" />
+
+        <Border Style="{StaticResource InsetPanel}" Padding="16,12">
+          <StackPanel>
+            <Grid Margin="0,2,0,10">
+              <Grid.ColumnDefinitions><ColumnDefinition Width="28" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+              <TextBlock x:Name="AppGlyph" Text="&#xE72C;" Style="{StaticResource IconText}" Foreground="{StaticResource AccentTextBrush}" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1" Text="BroidShot" VerticalAlignment="Center" />
+              <TextBlock x:Name="AppState" Grid.Column="2" Text="Sürüm kontrolü" Style="{StaticResource CaptionText}" MaxWidth="240" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Margin="0,2,0,10">
+              <Grid.ColumnDefinitions><ColumnDefinition Width="28" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+              <TextBlock Text="&#xE73E;" Style="{StaticResource IconText}" Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1" Text="Ekran alıntısı ve düzenleyici" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="2" Text="Hazır" Style="{StaticResource CaptionText}" Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Margin="0,0,0,10">
+              <Grid.ColumnDefinitions><ColumnDefinition Width="28" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+              <TextBlock x:Name="OcrGlyph" Text="&#xE73E;" Style="{StaticResource IconText}" Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1" Text="Türkçe + İngilizce OCR" VerticalAlignment="Center" />
+              <TextBlock x:Name="OcrState" Grid.Column="2" Text="Pakete dahil" Style="{StaticResource CaptionText}" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Margin="0,0,0,10">
+              <Grid.ColumnDefinitions><ColumnDefinition Width="28" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+              <TextBlock x:Name="YtGlyph" Text="&#xE896;" Style="{StaticResource IconText}" Foreground="{StaticResource TextTertiaryBrush}" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1" Text="Video indirme aracı" VerticalAlignment="Center" />
+              <TextBlock x:Name="YtState" Grid.Column="2" Text="Kontrol ediliyor" Style="{StaticResource CaptionText}" MaxWidth="240" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+            </Grid>
+            <Grid>
+              <Grid.ColumnDefinitions><ColumnDefinition Width="28" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+              <TextBlock x:Name="FfmpegGlyph" Text="&#xE896;" Style="{StaticResource IconText}" Foreground="{StaticResource TextTertiaryBrush}" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1" Text="Ses ve video işleme" VerticalAlignment="Center" />
+              <TextBlock x:Name="FfmpegState" Grid.Column="2" Text="Kontrol ediliyor" Style="{StaticResource CaptionText}" MaxWidth="240" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+            </Grid>
+          </StackPanel>
+        </Border>
+        <ProgressBar x:Name="PreparationBar" Height="4" IsIndeterminate="True" Margin="0,20,0,10" Maximum="100" AutomationProperties.Name="Hazırlık ilerlemesi" />
+        <TextBlock x:Name="StatusText" Text="Bileşenler kontrol ediliyor…" Style="{StaticResource CaptionText}" TextWrapping="Wrap" TextAlignment="Center" MinHeight="34" />
+        <TextBlock x:Name="ReleaseNotesText" Style="{StaticResource CaptionText}" TextWrapping="Wrap" TextAlignment="Center" MaxHeight="38" Margin="0,6,0,0" Visibility="Collapsed" />
+      </StackPanel>
+
+      <Grid Grid.Row="2" Margin="36,14,36,24">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+        <TextBlock x:Name="SourceText" Text="GitHub · Broid07/BroidShot&#x0a;Kesilen indirmeler kaldığı yerden sürdürülür." Style="{StaticResource CaptionText}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,14,0" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+          <Button x:Name="RetryButton" Content="Tekrar dene" Style="{StaticResource PrimaryButton}" core:ThemeAssist.Icon="&#xE72C;" Margin="0,0,8,0" Visibility="Collapsed" Click="RetryClicked" />
+        </StackPanel>
+      </Grid>
+    </Grid>
+  </Border>
+</Window>

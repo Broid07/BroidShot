@@ -1,0 +1,29 @@
+{
+  "id": "dQw4w9WgXcQ",
+  "title": "Örnek Video — Çığ Şükür",
+  "uploader": "Örnek Kanal",
+  "uploader_id": "@ornek",
+  "channel": "Örnek Kanal",
+  "duration": 212,
+  "webpage_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "extractor": "youtube",
+  "extractor_key": "Youtube",
+  "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+  "thumbnails": [
+    { "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/default.jpg", "id": "0" },
+    { "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg", "id": "1" }
+  ],
+  "_type": "video",
+  "formats": [
+    { "format_id": "sb0", "ext": "mhtml", "protocol": "mhtml", "vcodec": "none", "acodec": "none", "format_note": "storyboard" },
+    { "format_id": "139", "ext": "m4a", "protocol": "https", "vcodec": "none", "acodec": "mp4a.40.5", "abr": 48.8, "filesize": 1294320, "format_note": "low" },
+    { "format_id": "140", "ext": "m4a", "protocol": "https", "vcodec": "none", "acodec": "mp4a.40.2", "abr": 129.5, "filesize": 3433514, "format_note": "medium" },
+    { "format_id": "251", "ext": "webm", "protocol": "https", "vcodec": "none", "acodec": "opus", "abr": 135.2, "filesize_approx": 3590000 },
+    { "format_id": "18", "ext": "mp4", "protocol": "https", "vcodec": "avc1.42001E", "acodec": "mp4a.40.2", "height": 360, "width": 640, "fps": 25, "format_note": "360p" },
+    { "format_id": "135", "ext": "mp4", "protocol": "https", "vcodec": "avc1.4d401e", "acodec": "none", "height": 480, "width": 854, "fps": 25 },
+    { "format_id": "136", "ext": "mp4", "protocol": "https", "vcodec": "avc1.4d401f", "acodec": "none", "height": 720, "width": 1280, "fps": 25 },
+    { "format_id": "137", "ext": "mp4", "protocol": "https", "vcodec": "avc1.640028", "acodec": "none", "height": 1080, "width": 1920, "fps": 25, "filesize": 78123456 },
+    { "format_id": "248", "ext": "webm", "protocol": "https", "vcodec": "vp9", "acodec": "none", "height": 1080, "width": 1920, "fps": 25 },
+    { "format_id": "313", "ext": "webm", "protocol": "https", "vcodec": "vp9", "acodec": "none", "height": 2160, "width": 3840, "fps": 25 }
+  ]
+}

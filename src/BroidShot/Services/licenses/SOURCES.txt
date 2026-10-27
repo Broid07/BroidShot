@@ -1,0 +1,22 @@
+Downloaded 2026-10-27 from the official sources below. Original license texts were not modified.
+
+Apache-2.0.txt
+https://www.apache.org/licenses/LICENSE-2.0.txt
+SHA256 CFC7749B96F63BD31C3C42B5C471BF756814053E847C10F3EB003417BC523D30
+
+Tesseract-wrapper-ReadMe.md
+https://raw.githubusercontent.com/charlesw/tesseract/2c993543f7fa66576a8890a6c4ab053c4598aaed/ReadMe.md
+SHA256 273929B7BF5CDE5FDB2E3F5DBA0D347E61C05B39182F1C26F1DBEA308E5D14EF
+
+Tesseract-native-LICENSE.txt
+https://raw.githubusercontent.com/tesseract-ocr/tesseract/5ad5325a0aa8effc47ca033625b6a51682f82767/LICENSE
+SHA256 CFC7749B96F63BD31C3C42B5C471BF756814053E847C10F3EB003417BC523D30
+
+Leptonica-BSD.txt
+https://raw.githubusercontent.com/DanBloomberg/leptonica/f4138265b390f1921b9891d6669674d3157887d8/leptonica-license.txt
+SHA256 87829ABB5BBB00B55A107365DA89E9A33F86C4250169E5A1E5588505BE7D5806
+
+InteropDotNet-MIT.txt
+https://raw.githubusercontent.com/AndreyAkinshin/InteropDotNet/0b15eee809716c50562458d6fe95d52bea46b9c6/LICENSE.md
+SHA256 8FB016CD2A9EFAA281ECCE3075F69D20FFA8314BA8ECF8586D6744DD346CEA25
+

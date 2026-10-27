@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Media download module (yt-dlp + ffmpeg through IExternalToolManager). No NuGet packages. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>BroidShot.Modules.Media</RootNamespace>
+    <AssemblyName>BroidShot.Modules.Media</AssemblyName>
+    <Version>0.3.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../BroidShot.Core/BroidShot.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Media.Verification" />
+  </ItemGroup>
+</Project>

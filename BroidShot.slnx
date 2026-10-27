@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/BroidShot.Core/BroidShot.Core.csproj" />
+    <Project Path="src/BroidShot.Modules.Clipboard/BroidShot.Modules.Clipboard.csproj" />
+    <Project Path="src/BroidShot.Modules.Convert/BroidShot.Modules.Convert.csproj" />
+    <Project Path="src/BroidShot.Modules.Media/BroidShot.Modules.Media.csproj" />
+    <Project Path="src/BroidShot.Modules.Sample/BroidShot.Modules.Sample.csproj" />
+    <Project Path="src/BroidShot.Modules.Utilities/BroidShot.Modules.Utilities.csproj" />
+    <Project Path="src/BroidShot/BroidShot.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="src/BroidShot/Services/Verification/Services.Verification.csproj" />
+    <Project Path="tests/Capture.Verification/Capture.Verification.csproj" />
+    <Project Path="tests/Clipboard.Verification/Clipboard.Verification.csproj" />
+    <Project Path="tests/Convert.Verification/Convert.Verification.csproj" />
+    <Project Path="tests/Core.Verification/Core.Verification.csproj" />
+    <Project Path="tests/Desktop.Verification/Desktop.Verification.csproj" />
+    <Project Path="tests/Editor.Verification/Editor.Verification.csproj" />
+    <Project Path="tests/Lifecycle.Verification/Lifecycle.Verification.csproj" />
+    <Project Path="tests/Launcher.Verification/Launcher.Verification.csproj" />
+    <Project Path="tests/Media.Verification/Media.Verification.csproj" />
+    <Project Path="tests/Utilities.Verification/Utilities.Verification.csproj" />
+    <Project Path="tests/Updates.Verification/Updates.Verification.csproj" />
+  </Folder>
+</Solution>

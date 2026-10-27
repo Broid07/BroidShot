@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Clipboard manager module: history, tags, sensitive-data masking, quick panel. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>BroidShot.Modules.Clipboard</RootNamespace>
+    <AssemblyName>BroidShot.Modules.Clipboard</AssemblyName>
+    <Version>0.3.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../BroidShot.Core/BroidShot.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- MIT licensed (Microsoft / .NET Foundation); DPAPI (ProtectedData) ships in the WindowsDesktop framework. Microsoft.Data.Sqlite brings SQLitePCLRaw (Apache-2.0) and the e_sqlite3 native library (public domain). -->
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.14" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Clipboard.Verification" />
+  </ItemGroup>
+</Project>

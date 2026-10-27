@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Small utilities: colour picker, ruler, snippets, QR, text tools, batch files. One project, several IToolModule classes. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>BroidShot.Modules.Utilities</RootNamespace>
+    <AssemblyName>BroidShot.Modules.Utilities</AssemblyName>
+    <Version>0.3.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../BroidShot.Core/BroidShot.Core.csproj" />
+    <InternalsVisibleTo Include="Utilities.Verification" />
+    <!-- The capture overlay (BroidShot app) reuses colour formats, ruler snapping, QR decoding and the colour history. -->
+    <InternalsVisibleTo Include="BroidShot" />
+    <!-- Apache-2.0. Core package only: no System.Drawing / bitmap bindings; we feed it raw BGRA bytes. -->
+    <PackageReference Include="ZXing.Net" Version="0.16.10" />
+  </ItemGroup>
+</Project>

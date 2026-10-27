@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- Same TFM in the app, BroidShot.Core and every BroidShot.Modules.* project (WinRT APIs need the Windows 10 SDK projection). -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Branding/BroidShot.ico</ApplicationIcon>
+    <AssemblyName>BroidShot</AssemblyName>
+    <StartupObject>BroidShot.Program</StartupObject>
+    <Version>0.4.0</Version>
+    <Description>Windows için yerinde düzenleme destekli ekran alıntısı</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="Branding/BroidShot.ico"/>
+    <Content Include="Branding/BroidShot-logo.svg" CopyToPublishDirectory="PreserveNewest"/>
+    <Content Include="Branding/BroidShot-logo.png" CopyToPublishDirectory="PreserveNewest"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../BroidShot.Core/BroidShot.Core.csproj"/>
+    <!-- Module projects. Integration adds one line per module here and one instance in ModuleRegistry.cs. -->
+    <ProjectReference Include="../BroidShot.Modules.Clipboard/BroidShot.Modules.Clipboard.csproj"/>
+    <ProjectReference Include="../BroidShot.Modules.Media/BroidShot.Modules.Media.csproj"/>
+    <ProjectReference Include="../BroidShot.Modules.Convert/BroidShot.Modules.Convert.csproj"/>
+    <ProjectReference Include="../BroidShot.Modules.Utilities/BroidShot.Modules.Utilities.csproj"/>
+  </ItemGroup>
+  <Import Project="Services/Services.props" Condition="Exists('Services/Services.props')" />
+</Project>

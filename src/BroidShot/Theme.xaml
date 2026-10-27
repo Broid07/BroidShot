@@ -1,0 +1,149 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:core="clr-namespace:BroidShot.Core;assembly=BroidShot.Core">
+  <!-- Shared tokens and control styles live in BroidShot.Core so module projects use the same look.
+       This dictionary adds the logo and the shell-only styles (icon rail, top bar search, capture tiles). -->
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="pack://application:,,,/BroidShot.Core;component/Themes/Theme.xaml" />
+    <ResourceDictionary Source="Branding/Logo.xaml" />
+  </ResourceDictionary.MergedDictionaries>
+
+  <!-- Icon rail entry: 40×40 glyph button, red bar on the rail edge when Tag="selected". -->
+  <Style x:Key="RailButton" TargetType="Button">
+    <Setter Property="Width" Value="40" />
+    <Setter Property="Height" Value="40" />
+    <Setter Property="Margin" Value="0,0,0,4" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+    <Setter Property="FontFamily" Value="{StaticResource IconFont}" />
+    <Setter Property="FontSize" Value="18" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+    <Setter Property="ToolTipService.Placement" Value="Right" />
+    <Setter Property="ToolTipService.HorizontalOffset" Value="12" />
+    <Setter Property="ToolTipService.InitialShowDelay" Value="250" />
+    <Setter Property="ToolTipService.BetweenShowDelay" Value="0" />
+    <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Grid Background="Transparent" SnapsToDevicePixels="True">
+            <Border x:Name="Indicator" Width="3" Height="18" CornerRadius="1.5" Background="{StaticResource AccentBrush}" HorizontalAlignment="Left"
+                    Margin="-8,0,0,0" Visibility="Collapsed" />
+            <Border x:Name="Root" CornerRadius="8" Background="{TemplateBinding Background}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Root" Property="Background" Value="{StaticResource SurfaceHoverBrush}" />
+            </Trigger>
+            <Trigger Property="Tag" Value="selected">
+              <Setter TargetName="Root" Property="Background" Value="{StaticResource SurfaceActiveBrush}" />
+              <Setter TargetName="Indicator" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="Root" Property="Background" Value="{StaticResource SurfaceActiveBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+      </Trigger>
+      <Trigger Property="Tag" Value="selected">
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <!-- Thin line between rail groups. AutomationProperties.Name carries the category name. -->
+  <Style x:Key="RailGroupSeparator" TargetType="Border">
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="1" />
+    <Setter Property="Margin" Value="0,6,0,10" />
+    <Setter Property="Background" Value="{StaticResource StrokeBrush}" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="SnapsToDevicePixels" Value="True" />
+  </Style>
+
+  <!-- Top bar search: looks like a text field, opens the command palette. -->
+  <Style x:Key="SearchFieldButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Background" Value="{StaticResource ControlBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource StrokeBrush}" />
+    <Setter Property="Foreground" Value="{StaticResource TextTertiaryBrush}" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="Padding" Value="12,0,8,0" />
+    <Setter Property="Height" Value="36" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Cursor" Value="IBeam" />
+    <Setter Property="core:ThemeAssist.CornerRadius" Value="8" />
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="BorderBrush" Value="{StaticResource StrokeStrongBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <!-- Capture mode tile: icon tile, title, description. -->
+  <Style x:Key="CaptureTile" TargetType="Button" BasedOn="{StaticResource TileButton}">
+    <Setter Property="Margin" Value="0,0,12,0" />
+    <Setter Property="Padding" Value="18,16,18,18" />
+    <Setter Property="MinHeight" Value="132" />
+  </Style>
+  <Style x:Key="TileIcon" TargetType="Path">
+    <Setter Property="Stroke" Value="{StaticResource TextBrush}" />
+    <Setter Property="StrokeThickness" Value="1.5" />
+    <Setter Property="StrokeLineJoin" Value="Round" />
+    <Setter Property="StrokeStartLineCap" Value="Round" />
+    <Setter Property="StrokeEndLineCap" Value="Round" />
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Stretch" Value="Uniform" />
+  </Style>
+  <Style x:Key="TileTitle" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="16" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    <Setter Property="Margin" Value="0,16,0,3" />
+    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+  </Style>
+  <Style x:Key="TileText" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="LineHeight" Value="17" />
+  </Style>
+
+  <!-- History thumbnail card inside a wrapping ListBox. -->
+  <Style x:Key="HistoryCardItem" TargetType="ListBoxItem">
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Margin" Value="0,0,14,14" />
+    <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ListBoxItem">
+          <Border x:Name="Card" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource StrokeSubtleBrush}" BorderThickness="1" CornerRadius="10"
+                  Padding="6" SnapsToDevicePixels="True">
+            <ContentPresenter />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Card" Property="BorderBrush" Value="{StaticResource StrokeStrongBrush}" />
+              <Setter TargetName="Card" Property="Background" Value="{StaticResource SurfaceHoverBrush}" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter TargetName="Card" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+              <Setter TargetName="Card" Property="Background" Value="{StaticResource SurfaceHoverBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+</ResourceDictionary>

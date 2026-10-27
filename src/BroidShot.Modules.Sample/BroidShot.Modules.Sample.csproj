@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Template for BroidShot.Modules.<Name>: copy this file, rename it, keep the TFM and settings. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>BroidShot.Modules.Sample</RootNamespace>
+    <AssemblyName>BroidShot.Modules.Sample</AssemblyName>
+    <Version>0.3.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../BroidShot.Core/BroidShot.Core.csproj" />
+  </ItemGroup>
+</Project>

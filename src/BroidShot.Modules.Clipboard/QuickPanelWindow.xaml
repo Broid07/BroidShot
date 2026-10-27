@@ -1,0 +1,129 @@
+<Window x:Class="BroidShot.Modules.Clipboard.QuickPanelWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:core="clr-namespace:BroidShot.Core;assembly=BroidShot.Core"
+        Title="Pano hızlı paneli" Width="452" Height="520"
+        WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True" ShowActivated="True"
+        AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="Manual" Left="-10000" Top="-10000"
+        FontFamily="{StaticResource UiFont}" FontSize="{StaticResource FontSizeBody}" Foreground="{StaticResource TextBrush}"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" UseLayoutRounding="True" SnapsToDevicePixels="True">
+  <Window.Resources>
+    <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+    <Style x:Key="PanelListItem" TargetType="ListBoxItem">
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ListBoxItem">
+            <Border x:Name="Row" Background="Transparent" CornerRadius="{StaticResource RadiusControl}" Padding="10,8" Margin="0,0,0,2" SnapsToDevicePixels="True">
+              <Grid>
+                <Border x:Name="Accent" Width="3" Background="{StaticResource AccentBrush}" HorizontalAlignment="Left" Margin="-7,7,0,7" CornerRadius="1.5" Visibility="Collapsed" />
+                <ContentPresenter />
+              </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{StaticResource SurfaceHoverBrush}" />
+              </Trigger>
+              <Trigger Property="IsSelected" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{StaticResource SurfaceActiveBrush}" />
+                <Setter TargetName="Accent" Property="Visibility" Value="Visible" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style x:Key="HintText" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="{StaticResource FontSizeCaption}" />
+      <Setter Property="Foreground" Value="{StaticResource TextTertiaryBrush}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="5,0,12,0" />
+    </Style>
+  </Window.Resources>
+
+  <!-- 10 px transparent margin holds the shadow; the shadow is a sibling so text keeps ClearType. -->
+  <Grid Margin="10">
+    <Border CornerRadius="{StaticResource RadiusOverlay}" Background="{StaticResource OverlayBrush}">
+      <Border.Effect>
+        <DropShadowEffect BlurRadius="18" ShadowDepth="3" Direction="270" Opacity="0.55" Color="{StaticResource RailColor}" />
+      </Border.Effect>
+    </Border>
+    <Border CornerRadius="{StaticResource RadiusOverlay}" Background="{StaticResource OverlayBrush}" BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1">
+      <DockPanel>
+        <!-- Search (focused when the panel opens) -->
+        <Grid DockPanel.Dock="Top" Margin="12,12,12,8">
+          <TextBox x:Name="SearchBox" Style="{StaticResource SearchBox}" TextChanged="SearchChanged" MinHeight="38" Padding="34,6,72,6"
+                   core:ThemeAssist.Placeholder="Panoda ara" AutomationProperties.Name="Panoda ara" />
+          <TextBlock x:Name="CountText" Style="{StaticResource CaptionText}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0" IsHitTestVisible="False" />
+        </Grid>
+
+        <!-- Keyboard hints -->
+        <Border DockPanel.Dock="Bottom" BorderBrush="{StaticResource StrokeSubtleBrush}" BorderThickness="0,1,0,0" Padding="14,9">
+          <WrapPanel>
+            <Border Style="{StaticResource Keycap}"><TextBlock Text="↑↓" /></Border>
+            <TextBlock Text="gez" Style="{StaticResource HintText}" />
+            <Border Style="{StaticResource Keycap}"><TextBlock Text="Enter" /></Border>
+            <TextBlock Text="yapıştır" Style="{StaticResource HintText}" />
+            <Border Style="{StaticResource Keycap}"><TextBlock Text="Ctrl+Enter" /></Border>
+            <TextBlock Text="kopyala" Style="{StaticResource HintText}" />
+            <Border Style="{StaticResource Keycap}"><TextBlock Text="Esc" /></Border>
+            <TextBlock Text="kapat" Style="{StaticResource HintText}" Margin="5,0,0,0" />
+          </WrapPanel>
+        </Border>
+
+        <Grid>
+          <ListBox x:Name="List" Background="Transparent" BorderThickness="0" Padding="8,0,8,4" ItemContainerStyle="{StaticResource PanelListItem}"
+                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.ScrollUnit="Pixel"
+                   MouseDoubleClick="ListDoubleClick" Focusable="False" AutomationProperties.Name="Pano geçmişi">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+                  <Grid VerticalAlignment="Top" Margin="0,0,12,0">
+                    <Border x:Name="Tile" Width="30" Height="30" CornerRadius="7" Background="{StaticResource SurfaceActiveBrush}">
+                      <TextBlock x:Name="Glyph" Text="{Binding KindGlyph}" Style="{StaticResource IconText}" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" />
+                    </Border>
+                    <Border Width="30" Height="30" CornerRadius="7" Background="{Binding Swatch}" BorderBrush="{StaticResource StrokeStrongBrush}" BorderThickness="1"
+                            Visibility="{Binding HasSwatch, Converter={StaticResource BoolToVisibility}}" />
+                  </Grid>
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock x:Name="Preview" Text="{Binding PreviewText}" FontSize="{StaticResource FontSizeSmall}" LineHeight="18" TextWrapping="Wrap"
+                               TextTrimming="CharacterEllipsis" MaxHeight="36" Visibility="{Binding ShowText, Converter={StaticResource BoolToVisibility}}" />
+                    <Border HorizontalAlignment="Left" CornerRadius="4" BorderBrush="{StaticResource StrokeSubtleBrush}" BorderThickness="1"
+                            Visibility="{Binding ShowImage, Converter={StaticResource BoolToVisibility}}">
+                      <Image Source="{Binding Thumbnail}" MaxHeight="56" MaxWidth="200" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" />
+                    </Border>
+                    <TextBlock x:Name="Meta" Text="{Binding MetaText}" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource TextTertiaryBrush}"
+                               TextTrimming="CharacterEllipsis" Margin="0,3,0,0" />
+                  </StackPanel>
+                  <TextBlock x:Name="PinMark" Grid.Column="2" Text="&#xE718;" Style="{StaticResource IconText}" FontSize="12" Foreground="{StaticResource AccentTextBrush}"
+                             VerticalAlignment="Top" Margin="8,2,0,0" Visibility="{Binding IsPinned, Converter={StaticResource BoolToVisibility}}" />
+                </Grid>
+                <DataTemplate.Triggers>
+                  <DataTrigger Binding="{Binding IsSensitive}" Value="True">
+                    <Setter TargetName="Tile" Property="Background" Value="{StaticResource AccentSubtleBrush}" />
+                    <Setter TargetName="Glyph" Property="Foreground" Value="{StaticResource AccentTextBrush}" />
+                    <Setter TargetName="Preview" Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                    <Setter TargetName="Preview" Property="FontFamily" Value="{StaticResource MonoFont}" />
+                    <Setter TargetName="Meta" Property="Text" Value="{Binding SensitiveNote}" />
+                    <Setter TargetName="Meta" Property="Foreground" Value="{StaticResource AccentTextBrush}" />
+                  </DataTrigger>
+                </DataTemplate.Triggers>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <StackPanel x:Name="EmptyState" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24,0,24,30" Visibility="Collapsed">
+            <TextBlock Text="&#xE77F;" Style="{StaticResource IconText}" FontSize="26" Foreground="{StaticResource TextTertiaryBrush}" />
+            <TextBlock x:Name="EmptyText" Style="{StaticResource MutedText}" TextAlignment="Center" Margin="0,12,0,0" />
+          </StackPanel>
+        </Grid>
+      </DockPanel>
+    </Border>
+  </Grid>
+</Window>

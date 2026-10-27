@@ -1,0 +1,384 @@
+<UserControl x:Class="BroidShot.Modules.Utilities.BatchFilesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:core="clr-namespace:BroidShot.Core;assembly=BroidShot.Core">
+  <UserControl.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/BroidShot.Modules.Utilities;component/Common/UtilityStyles.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+      <Style x:Key="CardHeader" TargetType="Border">
+        <Setter Property="Padding" Value="16,0,10,0" />
+        <Setter Property="MinHeight" Value="54" />
+      </Style>
+      <Style x:Key="CardFooter" TargetType="Border">
+        <Setter Property="Padding" Value="16,10" />
+        <Setter Property="BorderBrush" Value="{StaticResource StrokeSubtleBrush}" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="Background" Value="{StaticResource ControlBrush}" />
+        <Setter Property="CornerRadius" Value="0,0,9,9" />
+      </Style>
+      <Style x:Key="TableList" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+        <Setter Property="ItemContainerStyle" Value="{StaticResource TableRow}" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="core:ThemeAssist.CornerRadius" Value="0" />
+      </Style>
+      <Style x:Key="ToolButton" TargetType="Button" BasedOn="{StaticResource GhostButton}">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Margin" Value="0,0,2,0" />
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+      </Style>
+      <Style x:Key="SafetyLine" TargetType="DockPanel">
+        <Setter Property="Margin" Value="0,0,0,10" />
+      </Style>
+    </ResourceDictionary>
+  </UserControl.Resources>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <!-- ===== Task switcher + undo ===== -->
+    <DockPanel Margin="0,0,0,16">
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+        <TextBlock x:Name="UndoText" Style="{StaticResource SmallLabel}" VerticalAlignment="Center" Margin="0,0,12,0" MaxWidth="320" TextTrimming="CharacterEllipsis"
+                   ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" />
+        <Button x:Name="UndoButton" Content="Son işlemi geri al" Style="{StaticResource SubtleButton}" core:ThemeAssist.Icon="&#xE7A7;" Click="UndoLast" Margin="0" />
+      </StackPanel>
+      <Border Style="{StaticResource SegmentedBar}">
+        <StackPanel Orientation="Horizontal">
+          <RadioButton x:Name="TabRename" Content="Yeniden adlandır" Style="{StaticResource Segment}" core:ThemeAssist.Icon="&#xE8AC;" Tag="Rename" Checked="TabClicked" />
+          <RadioButton x:Name="TabOrganize" Content="Türe göre ayır" Style="{StaticResource Segment}" core:ThemeAssist.Icon="&#xE8B7;" Tag="Organize" Checked="TabClicked" />
+          <RadioButton x:Name="TabZip" Content="Zip / Zip aç" Style="{StaticResource Segment}" core:ThemeAssist.Icon="&#xF012;" Tag="Zip" Checked="TabClicked" />
+        </StackPanel>
+      </Border>
+    </DockPanel>
+
+    <Border x:Name="StatusBar" Grid.Row="1" Style="{StaticResource InfoBar}" Margin="0,0,0,14" Visibility="{Binding Visibility, ElementName=StatusText}">
+      <DockPanel>
+        <TextBlock x:Name="StatusIcon" Text="&#xE946;" Style="{StaticResource IconText}" FontSize="14" Foreground="{StaticResource InfoBrush}" VerticalAlignment="Top" Margin="0,2,12,0" />
+        <TextBlock x:Name="StatusText" TextWrapping="Wrap" FontSize="13" LineHeight="19" Visibility="Collapsed" />
+      </DockPanel>
+    </Border>
+
+    <!-- ===================== Yeniden adlandır ===================== -->
+    <Grid x:Name="RenamePanel" Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="340" />
+        <ColumnDefinition Width="16" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <!-- Rules -->
+      <Border Style="{StaticResource Card}" Padding="0">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+          <StackPanel Margin="18,16,18,18">
+            <TextBlock Text="Kurallar" Style="{StaticResource SectionHeading}" Margin="0,0,0,14" />
+            <Grid Margin="0,0,0,10">
+              <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="10" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+              <StackPanel>
+                <TextBlock Text="Bul" Style="{StaticResource FieldLabel}" />
+                <TextBox x:Name="FindBox" TextChanged="RulesChanged" AutomationProperties.Name="Bul" />
+              </StackPanel>
+              <StackPanel Grid.Column="2">
+                <TextBlock Text="Şununla değiştir" Style="{StaticResource FieldLabel}" />
+                <TextBox x:Name="ReplaceBox" TextChanged="RulesChanged" AutomationProperties.Name="Şununla değiştir" />
+              </StackPanel>
+            </Grid>
+            <CheckBox x:Name="RegexBox" Content="Düzenli ifade (regex)" Checked="RulesChanged" Unchecked="RulesChanged" Margin="0,2,0,6" FontSize="13" />
+            <CheckBox x:Name="IgnoreCaseBox" Content="Büyük/küçük harfe duyarsız" IsChecked="True" Checked="RulesChanged" Unchecked="RulesChanged" Margin="0,0,0,4" FontSize="13" />
+
+            <Border Style="{StaticResource Divider}" Margin="0,12,0,14" />
+            <Grid Margin="0,0,0,12">
+              <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="10" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+              <StackPanel>
+                <TextBlock Text="Önek" Style="{StaticResource FieldLabel}" />
+                <TextBox x:Name="PrefixBox" TextChanged="RulesChanged" AutomationProperties.Name="Önek" />
+              </StackPanel>
+              <StackPanel Grid.Column="2">
+                <TextBlock Text="Sonek" Style="{StaticResource FieldLabel}" ToolTip="Uzantıdan önce eklenir" />
+                <TextBox x:Name="SuffixBox" TextChanged="RulesChanged" ToolTip="Uzantıdan önce eklenir" AutomationProperties.Name="Sonek" />
+              </StackPanel>
+            </Grid>
+            <TextBlock Text="Ad şablonu" Style="{StaticResource FieldLabel}" />
+            <TextBox x:Name="PatternBox" TextChanged="RulesChanged" FontFamily="{StaticResource MonoFont}" FontSize="13" core:ThemeAssist.Placeholder="Tatil_{n:000}"
+                     ToolTip="Örnek: Tatil_{n:000}  veya  {name}_{n}" AutomationProperties.Name="Ad şablonu" />
+            <TextBlock Style="{StaticResource CaptionText}" Margin="0,6,0,12" Text="{}{name} eski ad, {n:000} sıra numarası. Boş bırakılırsa eski ad kullanılır." />
+            <Grid Margin="0,0,0,12">
+              <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="10" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+              <StackPanel>
+                <TextBlock Text="Numara başlangıcı" Style="{StaticResource FieldLabel}" />
+                <TextBox x:Name="StartBox" Text="1" TextChanged="RulesChanged" AutomationProperties.Name="Numara başlangıcı" />
+              </StackPanel>
+              <StackPanel Grid.Column="2">
+                <TextBlock Text="Artış" Style="{StaticResource FieldLabel}" />
+                <TextBox x:Name="StepBox" Text="1" TextChanged="RulesChanged" AutomationProperties.Name="Artış" />
+              </StackPanel>
+            </Grid>
+            <Grid>
+              <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="10" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+              <StackPanel>
+                <TextBlock Text="Harf" Style="{StaticResource FieldLabel}" />
+                <ComboBox x:Name="CaseBox" SelectionChanged="RulesChangedSel" AutomationProperties.Name="Harf" />
+              </StackPanel>
+              <StackPanel Grid.Column="2">
+                <TextBlock Text="Yeni uzantı" Style="{StaticResource FieldLabel}" />
+                <TextBox x:Name="ExtBox" TextChanged="RulesChanged" core:ThemeAssist.Placeholder="değiştirme" ToolTip="Örnek: jpg (boş = değiştirme)" AutomationProperties.Name="Yeni uzantı" />
+              </StackPanel>
+            </Grid>
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+
+      <!-- Files + preview table -->
+      <Border Grid.Column="2" Style="{StaticResource Card}" Padding="0" AllowDrop="True" Drop="RenameDrop" DragOver="FileDragOver">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Border Style="{StaticResource CardHeader}">
+            <DockPanel>
+              <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Content="Dosya ekle" Style="{StaticResource ToolButton}" core:ThemeAssist.Icon="&#xE8E5;" Click="RenameAddFiles" ToolTip="Dosya ekle…" />
+                <Button Content="Klasör ekle" Style="{StaticResource ToolButton}" core:ThemeAssist.Icon="&#xE8B7;" Click="RenameAddFolder" ToolTip="Klasördeki dosyaları ekle…" />
+                <Border Style="{StaticResource VerticalDivider}" Height="18" />
+                <Button Style="{StaticResource IconButton}" Content="&#xE75C;" Click="RenameClear" ToolTip="Listeyi temizle" AutomationProperties.Name="Listeyi temizle" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="Önizleme" Style="{StaticResource SectionHeading}" Margin="0" VerticalAlignment="Center" />
+                <Border x:Name="RenameCountChip" Style="{StaticResource Chip}" Margin="10,1,0,0">
+                  <TextBlock x:Name="RenameCount" />
+                </Border>
+              </StackPanel>
+            </DockPanel>
+          </Border>
+          <Border Grid.Row="1" Style="{StaticResource ErrorBar}" Margin="16,0,16,12" Visibility="{Binding Visibility, ElementName=RenameError}">
+            <DockPanel>
+              <TextBlock Text="&#xEB90;" Style="{StaticResource IconText}" FontSize="14" Foreground="{StaticResource DangerBrush}" VerticalAlignment="Top" Margin="0,2,10,0" />
+              <TextBlock x:Name="RenameError" TextWrapping="Wrap" FontSize="13" Visibility="Collapsed" />
+            </DockPanel>
+          </Border>
+          <Border x:Name="RenameHeader" Grid.Row="2" Style="{StaticResource TableHeader}">
+            <Grid VerticalAlignment="Center">
+              <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="28" /><ColumnDefinition Width="*" /><ColumnDefinition Width="190" /></Grid.ColumnDefinitions>
+              <TextBlock Text="Şimdiki ad" />
+              <TextBlock Grid.Column="2" Text="Yeni ad" />
+              <TextBlock Grid.Column="3" Text="Durum" Margin="12,0,0,0" />
+            </Grid>
+          </Border>
+          <ListBox x:Name="RenameList" Grid.Row="3" Style="{StaticResource TableList}">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid>
+                  <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="28" /><ColumnDefinition Width="*" /><ColumnDefinition Width="190" /></Grid.ColumnDefinitions>
+                  <TextBlock Text="{Binding OldName}" FontSize="13" TextTrimming="CharacterEllipsis" ToolTip="{Binding OldName}" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="&#xE72A;" Style="{StaticResource IconText}" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center" />
+                  <TextBlock Grid.Column="2" Text="{Binding NewName}" FontSize="13" FontWeight="Medium" TextTrimming="CharacterEllipsis" ToolTip="{Binding NewName}" VerticalAlignment="Center" />
+                  <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="12,0,0,0" VerticalAlignment="Center" ToolTip="{Binding StatusText}">
+                    <Ellipse Width="7" Height="7" Fill="{Binding StatusBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBlock Text="{Binding StatusText}" FontSize="12" Foreground="{Binding StatusBrush}" TextTrimming="CharacterEllipsis" MaxWidth="160" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <!-- Empty: drop zone -->
+          <Grid x:Name="RenameEmpty" Grid.Row="2" Grid.RowSpan="2" Margin="16,0,16,16">
+            <Rectangle Style="{StaticResource DropZoneOutline}" />
+            <StackPanel Style="{StaticResource EmptyStatePanel}">
+              <Border Style="{StaticResource EmptyStateIcon}" Width="56" Height="56" CornerRadius="14">
+                <TextBlock Text="&#xE8AC;" Style="{StaticResource IconText}" FontSize="22" />
+              </Border>
+              <TextBlock Text="Dosyaları buraya sürükle" Style="{StaticResource EmptyStateTitle}" Margin="0,14,0,4" />
+              <TextBlock Text="Ya da dosya veya klasör ekle. Yeni adlar uygulamadan önce burada görünür; çakışma varsa işlem başlamaz." Style="{StaticResource EmptyStateText}" FontSize="13" />
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,16,0,0">
+                <Button Content="Dosya ekle…" core:ThemeAssist.Icon="&#xE8E5;" Click="RenameAddFiles" />
+                <Button Content="Klasör ekle…" core:ThemeAssist.Icon="&#xE8B7;" Click="RenameAddFolder" Margin="0" />
+              </StackPanel>
+            </StackPanel>
+          </Grid>
+          <Border Grid.Row="4" Style="{StaticResource CardFooter}">
+            <DockPanel>
+              <Button x:Name="RenameApply" DockPanel.Dock="Right" Content="Yeniden adlandır" Style="{StaticResource PrimaryButton}" core:ThemeAssist.Icon="&#xE8AC;" Margin="12,0,0,0"
+                      Click="RenameApplyClick" />
+              <TextBlock x:Name="RenameSummary" Style="{StaticResource SmallLabel}" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="13" />
+            </DockPanel>
+          </Border>
+        </Grid>
+      </Border>
+    </Grid>
+
+    <!-- ===================== Türe göre ayır ===================== -->
+    <Grid x:Name="OrganizePanel" Grid.Row="2" Visibility="Collapsed">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <Border Style="{StaticResource Card}" Margin="0,0,0,16" Padding="20,16">
+        <DockPanel>
+          <Border Style="{StaticResource AccentIconTile}" Width="40" Height="40" Margin="0,0,16,0" VerticalAlignment="Top">
+            <TextBlock Text="&#xE8B7;" Style="{StaticResource IconText}" FontSize="18" />
+          </Border>
+          <StackPanel>
+            <DockPanel>
+              <Button DockPanel.Dock="Right" Content="Klasör seç…" core:ThemeAssist.Icon="&#xE838;" Click="OrganizeBrowse" Margin="10,0,0,0" />
+              <TextBox x:Name="OrganizeFolderBox" IsReadOnly="True" core:ThemeAssist.Placeholder="Düzenlenecek klasörü seç" AutomationProperties.Name="Klasör" />
+            </DockPanel>
+            <TextBlock Style="{StaticResource MutedText}" FontSize="13" LineHeight="19" Margin="0,10,0,10"
+                       Text="Klasördeki dosyalar türlerine göre alt klasörlere taşınır. Hiçbir dosya silinmez, aynı adlı dosyanın üzerine yazılmaz; alt klasörler ve gizli dosyalar atlanır." />
+            <WrapPanel>
+              <Border Style="{StaticResource Chip}" Margin="0,0,6,0"><TextBlock Text="Görseller" /></Border>
+              <Border Style="{StaticResource Chip}" Margin="0,0,6,0"><TextBlock Text="Videolar" /></Border>
+              <Border Style="{StaticResource Chip}" Margin="0,0,6,0"><TextBlock Text="Belgeler" /></Border>
+              <Border Style="{StaticResource Chip}" Margin="0,0,6,0"><TextBlock Text="Arşivler" /></Border>
+              <Border Style="{StaticResource Chip}" Margin="0,0,6,0"><TextBlock Text="Müzik" /></Border>
+              <Border Style="{StaticResource Chip}"><TextBlock Text="Diğer" /></Border>
+            </WrapPanel>
+          </StackPanel>
+        </DockPanel>
+      </Border>
+
+      <Border Grid.Row="1" Style="{StaticResource Card}" Padding="0">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Border Style="{StaticResource CardHeader}">
+            <DockPanel>
+              <Button DockPanel.Dock="Right" Content="Yenile" Style="{StaticResource ToolButton}" core:ThemeAssist.Icon="&#xE72C;" Click="OrganizeRefresh" ToolTip="Önizlemeyi yenile"
+                      VerticalAlignment="Center" />
+              <TextBlock Text="Önizleme" Style="{StaticResource SectionHeading}" Margin="0" VerticalAlignment="Center" />
+            </DockPanel>
+          </Border>
+          <Border x:Name="OrganizeHeader" Grid.Row="1" Style="{StaticResource TableHeader}">
+            <Grid VerticalAlignment="Center">
+              <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="28" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+              <TextBlock Text="Dosya" />
+              <TextBlock Grid.Column="2" Text="Taşınacağı klasör" />
+            </Grid>
+          </Border>
+          <ListBox x:Name="OrganizeList" Grid.Row="2" Style="{StaticResource TableList}">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid>
+                  <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="28" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                  <TextBlock Text="{Binding FileName}" FontSize="13" TextTrimming="CharacterEllipsis" ToolTip="{Binding FileName}" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="&#xE72A;" Style="{StaticResource IconText}" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center" />
+                  <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="&#xE8B7;" Style="{StaticResource IconText}" FontSize="13" Foreground="{StaticResource TextTertiaryBrush}" Margin="0,0,8,0" />
+                    <TextBlock Text="{Binding Destination}" FontSize="13" TextTrimming="CharacterEllipsis" ToolTip="{Binding Destination}" Foreground="{StaticResource TextSecondaryBrush}" />
+                  </StackPanel>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <StackPanel x:Name="OrganizeEmpty" Grid.Row="1" Grid.RowSpan="2" Style="{StaticResource EmptyStatePanel}">
+            <Border Style="{StaticResource EmptyStateIcon}" Width="56" Height="56" CornerRadius="14">
+              <TextBlock Text="&#xE838;" Style="{StaticResource IconText}" FontSize="22" />
+            </Border>
+            <TextBlock x:Name="OrganizeEmptyTitle" Text="Önce bir klasör seç" Style="{StaticResource EmptyStateTitle}" Margin="0,14,0,4" />
+            <TextBlock Text="Hangi dosyanın nereye taşınacağı uygulamadan önce burada listelenir." Style="{StaticResource EmptyStateText}" FontSize="13" />
+          </StackPanel>
+          <Border Grid.Row="3" Style="{StaticResource CardFooter}">
+            <DockPanel>
+              <Button x:Name="OrganizeApply" DockPanel.Dock="Right" Content="Klasörü düzenle" Style="{StaticResource PrimaryButton}" core:ThemeAssist.Icon="&#xE8B7;" Margin="12,0,0,0"
+                      Click="OrganizeApplyClick" />
+              <TextBlock x:Name="OrganizeSummary" Style="{StaticResource SmallLabel}" FontSize="13" VerticalAlignment="Center" TextWrapping="Wrap" />
+            </DockPanel>
+          </Border>
+        </Grid>
+      </Border>
+    </Grid>
+
+    <!-- ===================== Zip ===================== -->
+    <Grid x:Name="ZipPanel" Grid.Row="2" Visibility="Collapsed">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="16" />
+        <ColumnDefinition Width="340" />
+      </Grid.ColumnDefinitions>
+
+      <Border Style="{StaticResource Card}" Padding="0" AllowDrop="True" Drop="ZipDrop" DragOver="FileDragOver">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Border Style="{StaticResource CardHeader}" BorderBrush="{StaticResource StrokeSubtleBrush}" BorderThickness="0,0,0,1">
+            <DockPanel>
+              <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Content="Dosya ekle" Style="{StaticResource ToolButton}" core:ThemeAssist.Icon="&#xE8E5;" Click="ZipAddFiles" ToolTip="Dosya ekle…" />
+                <Button Content="Klasör ekle" Style="{StaticResource ToolButton}" core:ThemeAssist.Icon="&#xE8B7;" Click="ZipAddFolder" ToolTip="Klasör ekle…" />
+                <Border Style="{StaticResource VerticalDivider}" Height="18" />
+                <Button Style="{StaticResource IconButton}" Content="&#xE75C;" Click="ZipClear" ToolTip="Listeyi temizle" AutomationProperties.Name="Listeyi temizle" />
+              </StackPanel>
+              <TextBlock Text="Zip oluştur" Style="{StaticResource SectionHeading}" Margin="0" VerticalAlignment="Center" />
+            </DockPanel>
+          </Border>
+          <ListBox x:Name="ZipList" Grid.Row="1" Style="{StaticResource TableList}">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <DockPanel Margin="0,9">
+                  <TextBlock Text="{Binding Glyph}" Style="{StaticResource IconText}" FontSize="16" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,0" />
+                  <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Name}" FontSize="13" TextTrimming="CharacterEllipsis" ToolTip="{Binding Path}" />
+                    <TextBlock Text="{Binding Folder}" FontSize="12" Foreground="{StaticResource TextTertiaryBrush}" TextTrimming="CharacterEllipsis" Margin="0,3,0,0" />
+                  </StackPanel>
+                </DockPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <Grid x:Name="ZipEmpty" Grid.Row="1" Margin="16">
+            <Rectangle Style="{StaticResource DropZoneOutline}" />
+            <StackPanel Style="{StaticResource EmptyStatePanel}">
+              <Border Style="{StaticResource EmptyStateIcon}" Width="56" Height="56" CornerRadius="14">
+                <TextBlock Text="&#xF012;" Style="{StaticResource IconText}" FontSize="22" />
+              </Border>
+              <TextBlock Text="Sıkıştırılacakları buraya sürükle" Style="{StaticResource EmptyStateTitle}" Margin="0,14,0,4" />
+              <TextBlock Text="Dosya ve klasörler tek bir zip'te toplanır. Var olan bir arşivin üzerine yazılmaz." Style="{StaticResource EmptyStateText}" FontSize="13" />
+            </StackPanel>
+          </Grid>
+          <Border Grid.Row="2" Style="{StaticResource CardFooter}">
+            <DockPanel>
+              <Button x:Name="ZipCreate" DockPanel.Dock="Right" Content="Zip oluştur…" Style="{StaticResource PrimaryButton}" core:ThemeAssist.Icon="&#xF012;" Margin="12,0,0,0"
+                      Click="ZipCreateClick" />
+              <TextBlock x:Name="ZipSummary" Style="{StaticResource SmallLabel}" FontSize="13" VerticalAlignment="Center" TextWrapping="Wrap" />
+            </DockPanel>
+          </Border>
+        </Grid>
+      </Border>
+
+      <Border Grid.Column="2" Style="{StaticResource Card}" Padding="20" VerticalAlignment="Top">
+        <StackPanel>
+          <Border Style="{StaticResource IconTile}" Width="40" Height="40" HorizontalAlignment="Left" Margin="0,0,0,14">
+            <TextBlock Text="&#xE896;" Style="{StaticResource IconText}" FontSize="18" />
+          </Border>
+          <TextBlock Text="Zip aç" Style="{StaticResource SectionHeading}" Margin="0,0,0,6" />
+          <TextBlock Style="{StaticResource MutedText}" FontSize="13" LineHeight="19" Margin="0,0,0,16"
+                     Text="Arşiv, zip dosyasının yanında aynı adlı yeni bir klasöre açılır." />
+          <DockPanel Style="{StaticResource SafetyLine}">
+            <TextBlock Text="&#xE73E;" Style="{StaticResource IconText}" FontSize="13" Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Top" Margin="0,3,10,0" />
+            <TextBlock Text="Önce denetlenir: hedef klasörün dışına yazmaya çalışan bir girdi varsa hiçbir şey açılmaz." Style="{StaticResource MutedText}" FontSize="13" LineHeight="19" />
+          </DockPanel>
+          <DockPanel Style="{StaticResource SafetyLine}">
+            <TextBlock Text="&#xE73E;" Style="{StaticResource IconText}" FontSize="13" Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Top" Margin="0,3,10,0" />
+            <TextBlock Text="Var olan dosyaların üzerine yazılmaz." Style="{StaticResource MutedText}" FontSize="13" LineHeight="19" />
+          </DockPanel>
+          <Button Content="Zip dosyası seç ve aç…" core:ThemeAssist.Icon="&#xE8E5;" HorizontalAlignment="Left" Margin="0,8,0,0" Click="ZipExtractClick" />
+        </StackPanel>
+      </Border>
+    </Grid>
+  </Grid>
+</UserControl>

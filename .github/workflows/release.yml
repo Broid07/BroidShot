@@ -1,0 +1,42 @@
+name: Windows release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version, for example 0.4.1 (without v)'
+        required: true
+permissions:
+  contents: read
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+      - name: Determine version
+        shell: pwsh
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: |
+          $version = if ($env:REQUESTED_VERSION) { $env:REQUESTED_VERSION } else { $env:GITHUB_REF_NAME -replace '^v','' }
+          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid release version' }
+          "BROIDSHOT_VERSION=$version" >> $env:GITHUB_ENV
+      - name: Verify and package
+        shell: pwsh
+        run: ./publish.ps1 -Version $env:BROIDSHOT_VERSION -Verify
+      - name: Publish verified release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "v$env:BROIDSHOT_VERSION"
+          gh release view $tag --json tagName 2>$null
+          if ($LASTEXITCODE -eq 0) { throw 'This version is already published. Use a higher version; published packages are never overwritten.' }
+          gh release create $tag artifacts/BroidShot-win-x64.zip artifacts/BroidShot-win-x64.zip.sha256 --title "BroidShot $tag" --generate-notes --target $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { throw 'Release upload failed' }
