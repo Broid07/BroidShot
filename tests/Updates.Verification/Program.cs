@@ -6,6 +6,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -27,6 +30,7 @@ internal static class Program
             if (args.Length == 2 && args[0] == "--package")
             {
                 PackageManifest package = PackageManifest.Load(args[1]);
+                VerifyAssemblyReferences(args[1]);
                 Console.WriteLine($"PASS: packaged version {package.Version}, {package.Files.Count} verified files.");
                 return 0;
             }
@@ -44,6 +48,25 @@ internal static class Program
         catch (Exception ex) { Console.Error.WriteLine("FAIL: " + ex); return 1; }
     }
     private static void Assert(bool value, string message) { if (!value) throw new InvalidOperationException(message); assertions++; }
+    private static void VerifyAssemblyReferences(string directory)
+    {
+        var files = Directory.GetFiles(directory, "BroidShot*.dll");
+        var identities = files.Select(AssemblyName.GetAssemblyName).ToDictionary(a => a.Name!, StringComparer.OrdinalIgnoreCase);
+        foreach (string file in files)
+        {
+            using var stream = File.OpenRead(file);
+            using var pe = new PEReader(stream);
+            var metadata = pe.GetMetadataReader();
+            foreach (var handle in metadata.AssemblyReferences)
+            {
+                var reference = metadata.GetAssemblyReference(handle);
+                string name = metadata.GetString(reference.Name);
+                if (!name.StartsWith("BroidShot", StringComparison.Ordinal)) continue;
+                Assert(identities.TryGetValue(name, out var actual) && actual.Version == reference.Version,
+                    $"{Path.GetFileName(file)} requires {name} {reference.Version}, but the package has a missing or different assembly version.");
+            }
+        }
+    }
     private static string Sha(byte[] bytes) => Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
     private static string Folder(string name) => Directory.CreateDirectory(Path.Combine(Root, name)).FullName;
     private static byte[] Payload => Enumerable.Range(0, 2048).Select(i => (byte)(i % 251)).ToArray();

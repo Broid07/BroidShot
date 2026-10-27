@@ -26,13 +26,20 @@ try {
         throw 'Uygulamayı tepsi menüsünden kapatıp paketi yeniden oluşturun.'
     }
     $taskStage = Join-Path $PSScriptRoot ('artifacts\.publish-' + [Guid]::NewGuid().ToString('N'))
-    Invoke-ReleaseDotnet -Arguments @('publish', 'src/BroidShot/BroidShot.csproj', '--no-restore', '-c', 'Release', '-r', 'win-x64', '--self-contained', 'true', '-o', $taskStage,
+    # Rebuild every project with the release version before copying outputs. Earlier
+    # verification builds can otherwise leave modules with incompatible identities.
+    Invoke-ReleaseDotnet -Arguments @('build', 'src/BroidShot/BroidShot.csproj', '--no-restore', '--no-incremental', '-c', 'Release', '-r', 'win-x64', '-p:SelfContained=true',
+        '-m:1', '-nr:false', '-p:UseSharedCompilation=false', "-p:Version=$Version")
+    Invoke-ReleaseDotnet -Arguments @('publish', 'src/BroidShot/BroidShot.csproj', '--no-restore', '--no-build', '-c', 'Release', '-r', 'win-x64', '--self-contained', 'true', '-o', $taskStage,
         '-m:1', '-nr:false', '-p:UseSharedCompilation=false', "-p:Version=$Version")
     Copy-Item -LiteralPath 'README.md' -Destination (Join-Path $taskStage 'README.md')
     $taskFiles = @(Get-ChildItem -LiteralPath $taskStage -Recurse -File | Sort-Object FullName | ForEach-Object {
         @{ Path = [IO.Path]::GetRelativePath($taskStage, $_.FullName).Replace('\','/'); Sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
     })
     @{ Version = $Version; Files = $taskFiles } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $taskStage 'BroidShot.package.json') -Encoding utf8
+    if ($Verify) {
+        Invoke-ReleaseDotnet -Arguments @('tests/Updates.Verification/bin/Release/net10.0-windows10.0.19041.0/Updates.Verification.dll', '--package', $taskStage)
+    }
     $taskZip = Join-Path $PSScriptRoot 'artifacts\BroidShot-win-x64.zip'
     Compress-Archive -Path (Join-Path $taskStage '*') -DestinationPath $taskZip -Force
     $taskHash = (Get-FileHash -LiteralPath $taskZip -Algorithm SHA256).Hash.ToLowerInvariant()
